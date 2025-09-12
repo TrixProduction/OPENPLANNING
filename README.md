@@ -37,6 +37,8 @@ Application open-source de consultation de planning universitaire (ciblée Lille
 ### Affichage des evenements particuliers tels que absences de profs sur PC
 ![image](https://pokendycards.b-cdn.net/openp/cap2.PNG)
 
+### Affichage journée par journée sur Mobile
+![image](https://pokendycards.b-cdn.net/openp/cap-mob1.PNG)
 
 ## Limites connues
 
