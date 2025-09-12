@@ -30,6 +30,13 @@ Application open-source de consultation de planning universitaire (ciblée Lille
 * Gestion des chevauchements par empilement visuel et partage de largeur.
 * Affichage des informations clés : matière, enseignant, salle, groupe, statut (annulé).
 
+
+
+![image](https://pokendycards.b-cdn.net/openp/cap1.PNG)
+
+
+
+
 ## Limites connues
 
 * Récurrences et exceptions iCalendar gérées partiellement.
