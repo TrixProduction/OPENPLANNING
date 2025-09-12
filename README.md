@@ -38,7 +38,8 @@ Application open-source de consultation de planning universitaire (ciblée Lille
 ![image](https://pokendycards.b-cdn.net/openp/cap2.PNG)
 
 ### Affichage journée par journée sur Mobile
-![image](https://pokendycards.b-cdn.net/openp/cap-mob1.PNG)
+<img src="[Assets/icon.png](https://pokendycards.b-cdn.net/openp/cap-mob1.PNG)" width="200">
+
 
 ## Limites connues
 
