@@ -31,10 +31,11 @@ Application open-source de consultation de planning universitaire (ciblée Lille
 * Affichage des informations clés : matière, enseignant, salle, groupe, statut (annulé).
 
 
-
+### Affichage classique sur PC
 ![image](https://pokendycards.b-cdn.net/openp/cap1.PNG)
 
-
+### Affichage des evenements particuliers tels que absences de profs sur PC
+![image](https://pokendycards.b-cdn.net/openp/cap2.PNG)
 
 
 ## Limites connues
