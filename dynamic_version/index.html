@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Planning</title>
+  <meta name="description" content="Planning hebdomadaire open‑source fait par Dimitri Kaimakliotis." />
+  <style>
+    /* =============================================================
+       ⚠️  BLOC CSS REPRIS DU PROJET DE RÉFÉRENCE (extraits fournis)
+       ============================================================= */
+    /* --- Icônes relatives aux cours --- */
+    .icon-recap-cours:before { content: "\\e92b"; }
+    .icon-intervenants:before { content: "\\e92c"; }
+    .icon-cours-annule:before { content: "\\e92d"; }
+    .icon-absences:before { content: "\\e92a"; }
+    .icon-enseignant-prof:before { content: "\\e925"; }
+    .icon-contenu-cours:before { content: "\\e906"; }
+    .icon-feuille-appel:before { content: "\\e907"; }
+    .icon-taf:before { content: "\\e90b"; }
+    .icon-salle-porte:before { content: "\\e91c"; }
+
+    /* --- Images et éléments visuels pour l'interface des cours --- */
+    .Image_Liste_Edt { background-image:url("../../images/IconeListeEdt.png"); width: 16px; height: 16px; }
+    .Image_IconeAbsCoursPrec { background-image:url("../../../FichiersRessource/AbsenceCoursPrecedent.png"); width: 17px; height: 17px; }
+    .Image_RecapVS_AbsenceCours, .Image_RecapVS_AbsenceCoursNonJustifie { width: 17px !important; height: 17px !important; background-image: url("../../images/Recap_VS.png"); }
+    .Image_RecapVS_AbsenceCours { background-position: 0 0; }
+    .Image_RecapVS_AbsenceCoursNonJustifie { background-position: -17px 0; }
+    .Image_AfficherCoursAnnules, .Image_AfficherPromoPlusTD, .Image_AfficherTDPlusPromo, .Image_AfficherTDPlusLien, .Image_AfficherCoursPlusPromoLiee, .Image_AfficherCoursPlusPromoLieePromo,
+    .Image_AfficherReservationSalle, .Image_BtnCoursNonPlaces { width: 120px; height: 20px; left: 0; }
+    .Image_AfficherCoursAnnules { background: url("../../images/AfficherCoursAnnules.png") 0 0 no-repeat; }
+    .Image_AfficherPromoPlusTD { background: url("../../images/AfficherPromoPlusTD.png") 0 0 no-repeat; }
+    .Image_AfficherTDPlusPromo { background: url("../../images/AfficherTDPlusPromo.png") 0 0 no-repeat; }
+    .Image_AfficherTDPlusLien { background: url("../../images/AfficherTDPlusLien.png") 0 0 no-repeat; }
+    .Image_AfficherCoursPlusPromoLiee { background: url("../../images/AfficherCoursPlusPromoLiee.png") 0 0 no-repeat; }
+    .Image_AfficherCoursPlusPromoLieePromo { background: url("../../images/AfficherCoursPlusPromoLieePromo.png") 0 0 no-repeat; }
+    .Image_AfficherReservationSalle { background: url("../../images/AfficherReservationSalle.png") 0 0 no-repeat; }
+    .Image_MrFicheFenetre { width: 120px; height: 20px; left: 0; background: url("../../../FichiersRessource/FicheCoursMonsieurFiche.png") 0 0 no-repeat; }
+    .Image_TravailDonnePourCours { width: 108px; height: 18px; left: 0; background: url("../../images/TravailDonnePourCours.png") 0 0 no-repeat; }
+    .Image_AfficherCahierTexteFlottant { background: url("../../images/AfficherCahierTexteFlottant.png") 0 0 no-repeat; width: 120px; height: 20px; left: 0; }
+    .Image_EDTGrille { width: 120px; height: 20px; left: 0; background: url("../../images/GrillePourBandeauTitre.png") 0 0 no-repeat; }
+    .Image_AppelFait { background-image: url("../../../FichiersRessource/AppelFait.png"); width: 16px; height: 16px; }
+    .Image_Retard { background-image:url("../../images/IconeRetard.png"); width: 13px; height: 13px; }
+    .Image_Absence { background-image:url("../../images/IconeAbsence.png"); width: 13px; height: 13px; }
+    .Image_Dispense { background-image: url("../../images/IconeDispense.png"); width: 13px; height: 13px; }
+    .Image_EstGAEV { background-image:url("../../images/CoursAccompagnementPersonnalise.png"); width: 16px; height: 16px; }
+    .Image_FicheCours { background-image:url("../../images/FicheCours.png"); width: 10px; height: 10px; }
+    .Image_FicheCoursPetit { background-image:url("../../images/FicheCoursPetit.png"); width: 6px; height: 6px; }
+    .Image_HachureCoursSuperpose { background-image:url("../../images/HachureGriseCoursSuperposes.png"); background-attachment:fixed; background-repeat:repeat; }
+    .Image_HachureCoursSuperposeDiag { background-image:url("../../images/HachureGriseCoursSuperposesPourDiag.png"); background-attachment:fixed; background-repeat:repeat; }
+    .Image_AffectationSalle_1 { background-image:url("../../images/ReservationSalle.png"); width: 14px; height: 14px; }
+    .Image_AffectationSalle_2 { background-image:url("../../images/ReservationSalleNonValidee.png"); width: 14px; height: 14px; }
+    .Image_ReservationSallePetit { background-image:url("../../images/ReservationSallePetit.png"); width: 10px; height: 10px; }
+    .Image_CahierDeTexte { height: 16px; width: 15px; background: url("../../images/CahierDeTexte.png") 0 0 no-repeat; }
+    .Image_CahierDeTexte_Verrouille { height: 15px; width: 16px; background: url("../../images/CahierDeTexteVerrouille.png") 0 0 no-repeat; }
+    .Image_Diagnostic_IndispoEtab { height: 13px; width: 13px; background: url("../../images/DiagFicheCoursIndispoEtab.png") 0 0 no-repeat; }
+    .Image_DiagAbsClasse { height: 16px; width: 16px; background: url("../../images/DiagAbsClasse.png") 0 0 no-repeat; }
+    .Image_Stage_EDT { background-image:url("../../images/Stage.png"); background-repeat:repeat; }
+    .Image_AppelOk { height:16px; width:16px; background-image:url("../../../FichiersRessource/AppelFait.png"); }
+    .Image_AppelFaitVerrouille { height:16px; width:16px; background-image:url("../../../FichiersRessource/AppelVerrouFait.png"); }
+    .Image_AppelNonFaitVerrouille { height:16px; width:16px; background-image:url("../../../FichiersRessource/AppelVerrouNonFait.png"); }
+    .Image_IconeTAFDonnePourCours { background-image:url("../../../FichiersRessource/ListeTravailDonnePourCours.png"); background-repeat:no-repeat; background-position:center; width: 14px; height: 15px; }
+    .Image_IconeContenuEtTADPourCours { background-image:url("../../../FichiersRessource/GrilleTravailAFairePlusContenu.png"); background-repeat:no-repeat; background-position:center; width: 16px; height: 16px; }
+    .Image_IconeTADPourCours { background-image:url("../../../FichiersRessource/GrilleTravailAFaire.png"); background-repeat:no-repeat; background-position:center; width: 16px; height: 16px; }
+    .Image_IconeContenuPourCours { background-image:url("../../../FichiersRessource/GrilleTrombone.png"); background-repeat:no-repeat; background-position:center; width: 11px; height: 11px; }
+    .Image_EtatAnnule { width: 16px; height: 16px; background-image:url("../../../FichiersRessource/EtatAnnule.png"); }
+    .Image_EtatNonPlace { background-image: url("../../../FichiersRessource/EtatNonPlace.png"); height:16px; width:16px; }
+    .Image_BtnCoursNonPlaces { background-image: url("../../images/AfficherCoursNonPlaces.png"); }
+    .Image_HoraireCoursGrille { width: 120px; height: 20px; left: 0; background: url("../../images/GrillePourBandeauTitre.png") 0 0 no-repeat; }
+    .Image_AfficherCoursGroupePlusPromoPlusTD { width: 20px; height: 20px; background: url("../../../FichiersRessource/AfficherCoursGroupe%2BPromo%2BTD.png") 0 0 no-repeat; }
+
+    /* --- Curseurs --- */
+    .Curseur_DetailCours { cursor:url("../../curseurs/CurseurDetailCours.CUR"), pointer; }
+    .Curseur_EDTRessource { cursor:url("../../curseurs/CurseurEDTRessource.CUR"), pointer; }
+
+    /* --- Calendrier --- */
+    .Calendrier_Jour_td { border-right: 1px solid black; vertical-align: bottom; }
+    .Calendrier_Jour_Const { position: relative; height: 22px; line-height: 20px; }
+    .Calendrier_JourInactif { color:gray; background-color:#C0C0C0; border-left:1px solid #D3D3D3; border-top:1px solid #D3D3D3; border-right:1px solid Black; border-bottom:1px solid Black; padding:0 1px; cursor:default; }
+    .Calendrier_Jour { padding:1px; border-bottom:0 solid Black; cursor:pointer; top:0; }
+    .Calendrier_Jour_Selection { top:-4px; border-left:1px solid white; border-top:1px solid white; border-right:1px solid black; border-bottom:1px solid black; cursor:pointer; }
+    .Calendrier_Jour_AvecContenu { text-decoration:underline; }
+    .Calendrier_Jour_Domaine { height:8px; border-top:1px solid black; background-color:white; }
+    .Calendrier_Mois { border-right:1px solid black; border-top:1px solid black; }
+    .Calendrier_Boutons { padding:2px 1px; }
+    .Calendrier_Boutons:active { outline:1px dotted; }
+
+    /* --- Grille et affichage des cours (Emploi du temps) --- */
+    .Cellule_TraitVertical { border-right: 1px solid white; }
+    .Cellule_TraitHeure { border-bottom: 1px solid white; }
+    .CellulesVisible { empty-cells: show; }
+    .Cellule_Vertical_0 { border-right: 1px solid white; height:1px; }
+    .Cellule_Vertical_1 { border-right: 1px solid black; height: 25%; width:1px; }
+    .Cellule_Separateur_1 { border-bottom: 1px solid; width: 25%; }
+    .Cellule_Separateur_2 { border-bottom: 1px solid; width: 12.5%; }
+    .Cellule_Separateur_Inverse_1 { height: 25%; width:1px; }
+    .Cellule_Separateur_Inverse_2 { height: 12.5%; width: 1px; }
+    .Cellule_TraitHeure_Impression { border-bottom: 1px solid black; }
+    .CelluleHoraire { text-align: right; padding-right: 5px; }
+    .CelluleSemaine_Impression { border-bottom: 1px solid black; }
+    .Titre_Jours_Grille { -webkit-transform: rotate(-90deg); transform: rotate(-90deg); -webkit-transform-origin: 0 0; transform-origin: 0 0; }
+    .Cours { width: 100%; height: 100%; padding: 0; }
+    .EmploiDuTemps_Element { position: absolute; overflow: hidden; border: 1px solid black; z-index: 3; box-sizing: border-box; }
+
+    /* =============================================================
+       Compléments non intrusifs pour coller au rendu de la capture
+       (fond, grilles grises, en-têtes, etc.).
+       ============================================================= */
+    :root { --hour-height: 60px; --day-count: 6; --start-hour: 8; --end-hour: 18; }
+    @media (max-width: 900px) {
+      :root { --hour-height: 56px; --day-count: 1; }
+    }
+    * { box-sizing: border-box; }
+    *, *::before, *::after { -webkit-user-select: none; user-select: none; }
+    html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+    body { margin: 0; background: #c7ccd3; font: 14px/1.4 Arial, Helvetica, sans-serif; color:#222; }
+    .wrap { max-width: 1400px; margin: 8px auto 24px; background:#eef1f4; border:1px solid #b2b7bd; box-shadow: 0 1px 4px rgba(0,0,0,.08); height: calc(100vh - 32px); display: flex; flex-direction: column; }
+    .brandbar { display:flex; align-items:center; justify-content:center; gap:10px; padding:6px 8px; border-bottom:1px solid #c7cbd1; background:#e9edf1; }
+    .brandbar img { height: 26px; display:block; }
+    .mobilebar { display:none; align-items:center; padding:6px 8px; border-bottom:1px solid #c7cbd1; background:#e4e7eb; }
+    .mobilebar .mrow { position:relative; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .mobilebar .mrow .week { position:absolute; left:50%; transform:translateX(-50%); text-align:center; width:60%; }
+    .mobilebar .week { font-weight:700; }
+    .mobilebar .actions { display:flex; gap:8px; align-items:center; }
+    .mobilebar .actions .btn { padding:6px 10px; }
+    .mobilebar .days { display:flex; gap:6px; overflow-x:auto; overflow-y:hidden; padding-top:6px; -webkit-overflow-scrolling: touch; touch-action: pan-x; overscroll-behavior: contain; scrollbar-width: none; }
+    .mobilebar .days::-webkit-scrollbar { height: 0; display: none; }
+    .mobilebar .tab { padding:6px 10px; border:1px solid #b0b6bd; border-radius:6px; background:#f4f6f8; cursor:pointer; white-space:nowrap; }
+    .mobilebar .tab.active { background:#dfe6ff; border-color:#86a8ff; }
+    @media (max-width: 900px) {
+      .monthsbar, .weeksbar, .days-header .hcell:first-child { display:none; }
+      .mobilebar { display:flex; flex-direction:column; align-items:stretch; }
+      .days-header { grid-template-columns: 48px 1fr; }
+      .planner { grid-template-columns: 48px 1fr; width: 100%; }
+      .hours { display:block; }
+      .wrap { margin: 0; width: 100%; max-width: 100%; padding: 0 6px 16px; border-left: none; border-right: none; }
+    }
+
+    /* Bande calendrier semaine/mois (style proche de l'image) */
+    .weeksbar { display: grid; grid-template-columns: repeat(54, 1fr); align-items: stretch; border-bottom:1px solid #8e959d; background:#c5cbd3; user-select:none; }
+    .weekbox { border-right:1px solid #8e959d; text-align:center; font-weight:700; padding:2px 0; font-size:11px; color:#222; cursor:pointer; }
+    .weekbox:hover { background:#b2bac3; }
+    .weekbox.active { background:#86a8ff; }
+    .monthsbar { display:grid; grid-template-columns: repeat(12, 1fr); align-items:center; padding:2px 6px; border-bottom:1px solid #9da3ab; background:#dfe3e8; font-weight:600; font-size:12px; color:#2b2f36; }
+    .monthsbar .mcell { border-right:1px solid #bbc1c8; text-align:center; padding:2px 0; }
+
+    /* En-tête des jours + dates */
+    .days-header { display:grid; grid-template-columns: 80px repeat(var(--day-count), 1fr); background:#d3d8de; border-bottom:2px solid #868d96; }
+    .days-header .hcell { padding:8px 6px; text-align:center; font-weight:700; border-left:1px solid #b0b7bf; color:#2b2f36; }
+    .days-header .hcell.day { display:flex; align-items:center; justify-content:center; text-align:center; }
+    .days-header .hcell:first-child { border-left:none; text-align:right; color:#555f6b; font-weight:600; }
+
+    /* Grille principale */
+    .planner { position: relative; display:grid; grid-template-columns: 80px repeat(var(--day-count), 1fr); height: calc((var(--end-hour) - var(--start-hour)) * var(--hour-height)); overflow-y: auto; overscroll-behavior: contain; flex: 1 1 auto; scrollbar-width: none; -ms-overflow-style: none; will-change: transform; contain: layout paint; transform: translateZ(0); }
+    .planner::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    @media (max-width: 900px) { .planner { touch-action: pan-y; } }
+    .hours { border-right:1px solid #b0b7bf; background:#edf0f3; }
+    .hourline { height: var(--hour-height); border-bottom:1px solid #ccd1d7; position:relative; }
+    .hourline span { position:absolute; right:12px; top:-18px; color:#5d6875; font-size:12px; background:#edf0f3; padding:0 6px; border-radius:4px; }
+    @media (max-width: 900px) {
+      .hourline span { right:8px; top:-14px; font-size:10px; padding:0 6px; background:#edf0f3; }
+    }
+
+    .daycol { position: relative; border-left:1px solid #bdc3ca; background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0, rgba(0,0,0,0.04) calc(var(--hour-height) - 1px), rgba(0,0,0,0.11) calc(var(--hour-height) - 1px), rgba(0,0,0,0.11) var(--hour-height)); }
+
+    /* Ligne verte repère (midi & 14h comme dans la capture) */
+    .repere { position:absolute; left:0; right:0; height:2px; background:#44c05a; opacity:.8; }
+
+    /* Cours — garder la classe source + visuels proches */
+    .EmploiDuTemps_Element { border-color: #6e6e6e; border-radius: 0; box-shadow: 0 1px 2px rgba(0,0,0,.18); padding: 6px 8px; background:#e2eefb; outline: 1px solid rgba(0,0,0,.15); outline-offset: -2px; }
+    .EmploiDuTemps_Element.selected { box-shadow: inset 0 0 0 2px #3b82f6, 0 1px 2px rgba(0,0,0,.18); border-color:#3b82f6; }
+    .EmploiDuTemps_Element .flag {
+      display:block; text-align:center; text-transform:uppercase; letter-spacing:.2px;
+      background:#ffffff; color:#c62828; font-weight:800; font-size:11px; line-height:1.2;
+      padding:3px 6px; border-radius:3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+      margin: 2px 4px 6px;
+    }
+    .Cours .title { font-weight:700; font-size:13px; line-height:1.2; }
+    .Cours .meta { margin-top:4px; font-size:12px; opacity:.95; }
+    /* Améliore la lisibilité des petits cours */
+    .Cours .title, .Cours .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .EmploiDuTemps_Element.compact { padding: 3px 4px; }
+    .EmploiDuTemps_Element.compact .title { font-size: 12px; margin-bottom: 1px; line-height: 1.15; }
+    .EmploiDuTemps_Element.compact .meta { font-size: 11px; margin-top: 1px; line-height: 1.05; }
+    .EmploiDuTemps_Element.tiny { padding: 2px 3px; }
+    .EmploiDuTemps_Element.tiny .title { font-size: 11px; margin-bottom: 0; line-height: 1.05; }
+    .EmploiDuTemps_Element.tiny .meta { font-size: 10px; margin-top: 0; line-height: 1; }
+    .EmploiDuTemps_Element.compact .flag { margin: 2px 3px 4px; font-size: 10px; padding:2px 5px; }
+    .EmploiDuTemps_Element.tiny .flag { margin: 1px 2px 2px; font-size: 9px; padding:2px 4px; }
+
+    /* Palette proche de la capture (pastels) */
+    .c-rose { background:#f3c5d2; border-color:#cf8ea6; }
+    .c-jaune { background:#efe381; border-color:#c0b64b; }
+    .c-vert  { background:#b7d8ac; border-color:#7b9b6a; }
+    .c-bleu  { background:#d3ecff; border-color:#88b4d6; }
+    .c-orange{ background:#f2d6b6; border-color:#d3a778; }
+    .c-violet{ background:#e2d2f0; border-color:#a892c3; }
+
+    /* Panneau latéral d'infos (sélection) */
+    .sidecard { position: fixed; z-index: 50; background: #fcfdff; border: 1px solid #a7adb5; box-shadow: 0 10px 30px rgba(0,0,0,.18); border-radius: 8px; min-width: 320px; max-width: min(460px, 92vw); overflow: hidden; }
+    .sidecard .top { display:flex; align-items:center; justify-content:space-between; background:#4b5563; color:#fff; padding:6px 10px; font-weight:700; font-size:13px; }
+    .sidecard .close { appearance:none; border:0; background:transparent; color:#fff; font-size:18px; line-height:1; cursor:pointer; padding:0 4px; }
+    .sidecard .hero { background:#e9ecf0; border-bottom:1px solid #d1d6dc; padding:8px 10px; }
+    .sidecard .hero .hrow { font-size:12px; color:#2b2f36; margin:2px 0; }
+    .sidecard .flag { display:inline-block; background:#fff; color:#c62828; font-weight:800; font-size:11px; text-transform:uppercase; padding:3px 8px; border-radius:4px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.2); margin: 2px 0 6px; }
+    .sidecard .list { max-height: 360px; overflow:auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    .sidecard .orow { display:grid; grid-template-columns: 1.4fr 1.6fr auto; gap:10px; align-items:center; font-size:12px; color:#222; padding:6px 10px; border-bottom:1px solid #e5e7eb; }
+    .sidecard .orow:nth-child(odd) { background:#fafbfc; }
+    @media (max-width: 900px) {
+      .sidecard { left: 0 !important; right: 0 !important; max-width: none; width: 100%; border-radius: 12px 12px 0 0; bottom: 0 !important; top: auto !important; transform: translateY(100%); transition: transform 260ms cubic-bezier(0.22,1,0.36,1); }
+      .sidecard.show { transform: translateY(0); }
+      .sidecard .top { position: relative; }
+      .sidecard .top::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); top: 4px; width: 36px; height: 4px; background: rgba(255,255,255,.7); border-radius: 4px; }
+    }
+    /* Overlay mobile semaines */
+    .overlay { position: fixed; inset:0; background: rgba(0,0,0,.35); z-index: 60; display:none; }
+    .overlay.show { display:block; }
+    .overlay .panel { position:absolute; left:0; right:0; bottom:0; max-height:80%; background:#fff; border-radius:12px 12px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,.25); overflow:auto; overscroll-behavior: contain; }
+    .overlay .panel header { padding:10px; font-weight:800; border-bottom:1px solid #e5e7eb; }
+    .overlay .grid { display:grid; grid-template-columns: repeat(6, 1fr); gap:8px; padding:10px; }
+    .overlay .wbtn { padding:10px 0; border:1px solid #cbd5df; border-radius:8px; text-align:center; font-weight:700; background:#f4f7fa; }
+    .overlay .wbtn.active { background:#dfe6ff; border-color:#86a8ff; }
+    /* URL Prompt */
+    .url-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 9999; display: none; }
+    .url-overlay.show { display: block; }
+    .url-panel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, 92vw); background: #fff; border: 1px solid #c9ced6; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); padding: 14px; }
+    .url-panel h3 { margin: 0 0 8px; font-size: 16px; }
+    .url-panel p { margin: 6px 0 10px; font-size: 13px; color: #4b5563; }
+    .url-panel .row { display: flex; gap: 8px; align-items: center; }
+    .url-panel input[type="url"] { flex: 1; padding: 10px 12px; font-size: 14px; border: 1px solid #c9ced6; border-radius: 8px; }
+    .url-panel .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+    .url-panel .error { color: #c62828; font-size: 12px; display:none; margin-top:6px; }
+    @media (max-width: 900px) {
+      .url-panel { left: 0; right: 0; bottom: 0; top: auto; transform: none; width: auto; border-radius: 14px 14px 0 0; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brandbar"><img src="https://pokendycards.b-cdn.net/openp/logo.png" alt="Open Planning" /></div>
+    <div class="mobilebar" id="mobilebar">
+      <div class="mrow">
+        <div class="actions">
+          <button class="btn" id="mPrev">⟨</button>
+          <button class="btn" id="mNext">⟩</button>
+          <button class="btn" id="mImport">.ics</button>
+        </div>
+        <div class="week" id="mWeekLabel" style="cursor:pointer;">Semaine</div>
+      </div>
+      <div class="days" id="mDaysTabs"></div>
+    </div>
+    <div class="url-overlay" id="urlOverlay">
+      <div class="url-panel">
+        <h3>Ajouter votre lien iCalendar (.ics)</h3>
+        <p>Depuis votre gestionnaire de planning, cliquez sur l'icône iCal et collez ici le lien. Exemple: <code>https://exemple.edu/ics/MonPlanning.ics?token=abc...</code></p>
+        <div class="row">
+          <input type="url" id="icsUrlInput" placeholder="https://exemple.edu/ics/MonPlanning.ics?token=..." />
+          <button class="btn" id="icsUrlLoad">Charger</button>
+        </div>
+        <div class="error" id="icsUrlError">Impossible de charger ce lien. Vérifiez l'URL.</div>
+        <div class="actions"><button class="btn" id="icsUrlCancel">Annuler</button></div>
+      </div>
+    </div>
+    <div class="overlay" id="weeksOverlay">
+      <div class="panel">
+        <header>Sélectionner une semaine</header>
+        <div class="grid" id="weeksGrid"></div>
+      </div>
+    </div>
+    <!-- Barre des semaines (numéros) -->
+    <div class="weeksbar" id="weeksbar"></div>
+    <!-- Barre des mois -->
+    <div class="monthsbar" id="monthsbar"></div>
+
+    <!-- En-tête des jours -->
+    <div class="days-header" id="daysHeader">
+      <div class="hcell">Heures</div>
+      <!-- Jours injectés par JS -->
+    </div>
+
+    <!-- Grille horaire -->
+    <div class="planner" id="planner">
+      <div class="hours" id="hours"></div>
+      <!-- Colonnes jour injectées -->
+    </div>
+  </div>
+
+  <script>
+    // ───────────────────────── Utilitaires date/heure ─────────────────────────
+    const pad = (n) => String(n).padStart(2,'0');
+    const timeToMin = (t) => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+    const minToTop = (m) => ( (m - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--start-hour'))*60)) * (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'))/60) );
+    const mondayOf = (d) => { const x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const wd = x.getUTCDay(); const diff = (wd===0?-6:1)-wd; x.setUTCDate(x.getUTCDate()+diff); return x; };
+    const addDays = (d,n) => { const x = new Date(d); x.setUTCDate(x.getUTCDate()+n); return x; };
+    const iso = (d) => `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`;
+    const frDayLabel = (d) => d.toLocaleDateString('fr-FR',{ weekday:'short', day:'2-digit', month:'long' });
+    const weekNumber = (d) => { // ISO week number
+      const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+      const dayNum = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(t.getUTCFullYear(),0,1));
+      const weekNo = Math.ceil((((t - yearStart) / 86400000) + 1) / 7); return weekNo;
+    };
+
+    // ───────────────────────── Données dynamiques depuis ICS ─────────────────────────
+    // État
+    let currentMonday = mondayOf(new Date());
+    const WEEKS = {};
+
+    const STORAGE_KEY = 'OpenPlanning.lastICS';
+    const STORAGE_KEY_META = 'OpenPlanning.lastICS.meta';
+    const ICS_URL = 'https://edt-iut.univ-lille.fr/Telechargements/ical/Edt_KAIMAKLIOTIS.ics?version=2018.0.3.6&idICal=39DBC72FA5C3605690B94BF9C8090774&param=643d5b312e2e36325d2666683d3126663d31';
+    function setToToday() {
+      const now = new Date();
+      currentMonday = mondayOf(now);
+      let idx = ((now.getDay() + 6) % 7);
+      mobileDayIndex = idx;
+    }
+    function saveICSToCache(text) {
+      try {
+        // chunk to avoid QUOTA issues on some browsers
+        const chunkSize = 100000; // 100 KB
+        const chunks = Math.ceil(text.length / chunkSize);
+        for (let i = 0; i < chunks; i++) {
+          localStorage.setItem(`${STORAGE_KEY}.${i}`, text.slice(i*chunkSize, (i+1)*chunkSize));
+        }
+        localStorage.setItem(STORAGE_KEY_META, JSON.stringify({ version: 2, chunks, user: true }));
+        // cleanup legacy single-key storage
+        localStorage.removeItem(STORAGE_KEY);
+        // session fallback
+        sessionStorage.setItem(STORAGE_KEY_META, JSON.stringify({ version: 2, chunks, user: true }));
+        for (let i = 0; i < chunks; i++) sessionStorage.setItem(`${STORAGE_KEY}.${i}`, text.slice(i*chunkSize, (i+1)*chunkSize));
+      } catch (e) { console.warn('Cache ICS error:', e); }
+    }
+    function readICSTextFromCache() {
+      try {
+        let metaRaw = localStorage.getItem(STORAGE_KEY_META);
+        if (metaRaw) {
+          const meta = JSON.parse(metaRaw);
+          if (meta && Number.isFinite(meta.chunks) && meta.user === true) {
+            let acc = '';
+            for (let i = 0; i < meta.chunks; i++) {
+              const part = localStorage.getItem(`${STORAGE_KEY}.${i}`) || '';
+              acc += part;
+            }
+            return acc.length ? acc : null;
+          }
+        }
+        // session fallback
+        metaRaw = sessionStorage.getItem(STORAGE_KEY_META);
+        if (metaRaw) {
+          const meta = JSON.parse(metaRaw);
+          if (meta && Number.isFinite(meta.chunks) && meta.user === true) {
+            let acc = '';
+            for (let i = 0; i < meta.chunks; i++) {
+              const part = sessionStorage.getItem(`${STORAGE_KEY}.${i}`) || '';
+              acc += part;
+            }
+            if (acc.length) return acc;
+          }
+        }
+        // legacy fallback
+        return null;
+      } catch { return null; }
+    }
+    function clearWeeks() { for (const k of Object.keys(WEEKS)) delete WEEKS[k]; }
+    function loadICSText(text, { jumpToToday = true, save = false } = {}) {
+      clearWeeks();
+      const events = parseICS(text);
+      mergeEventsIntoWeeks(events);
+      if (jumpToToday) setToToday();
+      // Align to a week that exists in ICS if today's week not present
+      const todayKey = iso(currentMonday);
+      if (!WEEKS[todayKey]) {
+        const keys = Object.keys(WEEKS);
+        if (keys.length) {
+          const todayMs = currentMonday.getTime();
+          keys.sort((a,b)=> Math.abs(new Date(a+'T00:00:00Z').getTime()-todayMs) - Math.abs(new Date(b+'T00:00:00Z').getTime()-todayMs));
+          const best = keys[0];
+          const [yy,mm,dd] = best.split('-').map(Number);
+          currentMonday = new Date(Date.UTC(yy, mm-1, dd));
+          // if day index outside (e.g., Sunday=6), clamp to last day available
+          if (mobileDayIndex >= MOBILE_DAYS) mobileDayIndex = MOBILE_DAYS-1;
+        }
+      }
+      if (save) saveICSToCache(text);
+      buildWeeksBar();
+      renderWeek();
+    }
+    async function loadDefaultICS() {
+      // 1) Try user-imported cache only
+      const cached = readICSTextFromCache();
+      if (cached && cached.length > 0) { loadICSText(cached, { jumpToToday: true, save: false }); return; }
+      // 2) Otherwise fetch saved ICS URL if any
+      const savedUrl = (()=>{ try { return localStorage.getItem('OpenPlanning.icsURL') || ''; } catch { return ''; } })();
+      if (savedUrl) {
+        try {
+          const resp = await fetch('fetch_ics.php?url=' + encodeURIComponent(savedUrl), { cache: 'no-store' });
+          if (resp.ok) {
+            const text = await resp.text();
+            loadICSText(text, { jumpToToday: true, save: false });
+            return;
+          }
+        } catch (e) { console.warn('Saved ICS URL fetch failed', e); }
+      }
+      // 3) Ask user for URL (modal)
+      showUrlPrompt();
+    }
+
+    function MondayFromDate(d) { return mondayOf(new Date(d)); }
+
+    function unfoldICS(text) {
+      const lines = text.replace(/\r\n/g, '\n').split('\n');
+      const out = [];
+      for (const line of lines) {
+        if (line.startsWith(' ') && out.length) out[out.length-1] += line.slice(1);
+        else out.push(line);
+      }
+      return out;
+    }
+    function icsUnescape(s='') { return s.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\'); }
+    function parseDateVal(val) {
+      // supports YYYYMMDDTHHMM[SS]Z or YYYYMMDD
+      if (/^\d{8}T\d{6}Z$/.test(val)) return new Date(val.replace(/^(.{4})(.{2})(.{2})T(.{2})(.{2})(.{2})Z$/, '$1-$2-$3T$4:$5:$6Z'));
+      if (/^\d{8}T\d{4}Z$/.test(val)) return new Date(val.replace(/^(.{4})(.{2})(.{2})T(.{2})(.{2})Z$/, '$1-$2-$3T$4:$5:00Z'));
+      if (/^\d{8}$/.test(val)) return new Date(val.replace(/^(.{4})(.{2})(.{2})$/, '$1-$2-$3T00:00:00Z'));
+      return new Date(val);
+    }
+    function toHHMMLocal(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+    function localJourIndex(d) { const j = d.getDay(); return (j+6)%7; }
+
+    function parseICS(text) {
+      const lines = unfoldICS(text);
+      const events = [];
+      let cur = null;
+      for (const raw of lines) {
+        if (raw === 'BEGIN:VEVENT') { cur = {}; continue; }
+        if (raw === 'END:VEVENT') {
+          if (cur.DTSTART && cur.DTEND) {
+            const ds = parseDateVal(cur.DTSTART);
+            const de = parseDateVal(cur.DTEND);
+            const localStart = new Date(ds);
+            const localEnd = new Date(de);
+            const jour = localJourIndex(localStart);
+            const debut = toHHMMLocal(localStart);
+            const fin = toHHMMLocal(localEnd);
+            const [matiere, teacherFromSummary] = parseSummary(icsUnescape(cur.SUMMARY || 'Cours'));
+            const { prof, groupes, salle } = parseDescriptionAndLocation(icsUnescape(cur.DESCRIPTION || ''), icsUnescape(cur.LOCATION || ''));
+            events.push({ localStart, localEnd, jour, debut, fin, matiere, prof: prof || teacherFromSummary || '', salle });
+          }
+          cur = null; continue;
+        }
+        if (!cur) continue;
+        const idx = raw.indexOf(':');
+        if (idx === -1) continue;
+        const keyPart = raw.slice(0, idx);
+        const value = raw.slice(idx+1);
+        const key = keyPart.split(';',1)[0];
+        cur[key] = value;
+      }
+      return events;
+    }
+    function parseSummary(sum) {
+      // ex: "R3.04 Qualité de dév. - Delecroix - S3-G, S3-H"
+      const parts = sum.split(' - ').map(s=>s.trim());
+      const matiere = parts[0] || sum;
+      const prof = parts[1] || '';
+      return [matiere, prof];
+    }
+    function parseDescriptionAndLocation(desc, location) {
+      let prof = '';
+      let groupes = [];
+      let salle = location || '';
+      for (const line of desc.split('\n')) {
+        const t = line.trim();
+        if (/^Enseignant\(s\)?\s*:/i.test(t)) prof = t.split(':').slice(1).join(':').trim();
+        if (/^Enseignant\s*:/i.test(t)) prof = t.split(':').slice(1).join(':').trim();
+        if (/^Promotions?\s*:/i.test(t)) groupes = t.split(':').slice(1).join(':').split(',').map(s=>s.trim());
+        if (/^Salle\(s\)?\s*:/i.test(t)) salle = t.split(':').slice(1).join(':').trim();
+        if (/^Salles?\s*:/i.test(t)) salle = t.split(':').slice(1).join(':').trim();
+      }
+      return { prof, groupes, salle };
+    }
+    function mergeEventsIntoWeeks(events) {
+      for (const ev of events) {
+        const mon = mondayOf(ev.localStart);
+        const key = iso(mon);
+        if (!WEEKS[key]) WEEKS[key] = [];
+        if (ev.jour < 0 || ev.jour > 6) continue;
+        WEEKS[key].push({ id: `${key}-${ev.jour}-${ev.debut}-${ev.fin}-${WEEKS[key].length}`,
+          jour: ev.jour, debut: ev.debut, fin: ev.fin, matiere: ev.matiere, prof: ev.prof, salle: ev.salle, couleur: pickColor(ev.matiere) });
+      }
+    }
+    function pickColor(matiere='') {
+      const m = matiere.toLowerCase();
+      if (m.includes('sql')) return 'c-bleu';
+      if (m.includes('analyse')) return 'c-orange';
+      if (m.includes('projet') || m.includes('dcn') || m.includes('dév')) return 'c-vert';
+      if (m.includes('anglais') || m.includes('communication')) return 'c-rose';
+      if (m.includes('probas') || m.includes('probabil')) return 'c-jaune';
+      return '';
+    }
+
+    // ───────────────────────── Construction de l'UI ─────────────────────────
+    const hoursEl = document.getElementById('hours');
+    const plannerEl = document.getElementById('planner');
+    const daysHeaderEl = document.getElementById('daysHeader');
+    const weeksbarEl = document.getElementById('weeksbar');
+    const monthsbarEl = document.getElementById('monthsbar');
+    let fileInputEl = null;
+    const mobilebarEl = document.getElementById('mobilebar');
+    const mWeekLabelEl = document.getElementById('mWeekLabel');
+    const mDaysTabsEl = document.getElementById('mDaysTabs');
+    const mPrevEl = document.getElementById('mPrev');
+    const mNextEl = document.getElementById('mNext');
+    const mImportEl = document.getElementById('mImport');
+    const weeksOverlayEl = document.getElementById('weeksOverlay');
+    const weeksGridEl = document.getElementById('weeksGrid');
+    // URL Prompt refs
+    const urlOverlayEl = document.getElementById('urlOverlay');
+    const icsUrlInputEl = document.getElementById('icsUrlInput');
+    const icsUrlLoadEl = document.getElementById('icsUrlLoad');
+    const icsUrlCancelEl = document.getElementById('icsUrlCancel');
+    const icsUrlErrorEl = document.getElementById('icsUrlError');
+    // Swipe handling (mobile)
+    let touchX = null, touchY = null, swipeBound = false;
+    function setPlannerMaxHeight() {
+      if (!isMobile) { plannerEl.style.maxHeight = ''; return; }
+      const rect = plannerEl.getBoundingClientRect();
+      const available = window.innerHeight - rect.top - 8; // 8px bottom margin
+      if (available > 100) plannerEl.style.maxHeight = available + 'px';
+    }
+    function onTouchStart(e) {
+      if (!isMobile) return;
+      const t = e.touches && e.touches[0];
+      touchX = t ? t.clientX : null;
+      touchY = t ? t.clientY : null;
+    }
+    function onTouchEnd(e) {
+      if (!isMobile) return;
+      if (touchX == null) return;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - touchX; const dy = Math.abs(t.clientY - touchY);
+      // horizontal swipe only
+      if (Math.abs(dx) > 60 && dy < 50) {
+        if (dx < 0) { // next day
+          if (mobileDayIndex < MOBILE_DAYS - 1) mobileDayIndex++; else { currentMonday = addDays(currentMonday, 7); mobileDayIndex = 0; }
+          renderWeek();
+        } else { // prev day
+          if (mobileDayIndex > 0) mobileDayIndex--; else { currentMonday = addDays(currentMonday, -7); mobileDayIndex = MOBILE_DAYS - 1; }
+          renderWeek();
+        }
+      }
+      touchX = touchY = null;
+    }
+    function ensureSwipeListeners() {
+      if (swipeBound) return;
+      plannerEl.addEventListener('touchstart', onTouchStart, { passive: true });
+      plannerEl.addEventListener('touchend', onTouchEnd, { passive: true });
+      swipeBound = true;
+    }
+    let isMobile = window.matchMedia('(max-width: 900px)').matches;
+    const MOBILE_DAYS = 6; // Mon–Sat for mobile navigation
+    let mobileDayIndex = 0; // 0..4 (lun..ven)
+    window.matchMedia('(max-width: 900px)').addEventListener('change', (e)=>{ isMobile = e.matches; renderWeek(); buildDaysHeader(); buildMobileBar(); bindScrollLock(); setPlannerMaxHeight(); });
+
+    function buildHours() {
+      hoursEl.innerHTML = '';
+      for (let h = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--start-hour')); h <= parseInt(getComputedStyle(document.documentElement).getPropertyValue('--end-hour')); h++) {
+        const line = document.createElement('div');
+        line.className = 'hourline Cellule_TraitHeure';
+        const label = document.createElement('span');
+        label.className = 'CelluleHoraire';
+        label.textContent = `${pad(h)}h00`;
+        line.appendChild(label);
+        hoursEl.appendChild(line);
+      }
+    }
+
+    function buildDaysHeader() {
+      // Effacer anciennes cellules jour
+      Array.from(daysHeaderEl.querySelectorAll('.hcell.day')).forEach(n => n.remove());
+      const labels = ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+      const count = isMobile ? 1 : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--day-count'));
+      const startIndex = isMobile ? mobileDayIndex : 0;
+      // Force layout width
+      daysHeaderEl.style.gridTemplateColumns = isMobile ? '48px 1fr' : '80px repeat(var(--day-count), 1fr)';
+      for (let i=0;i<count;i++) {
+        const d = addDays(currentMonday, i);
+        const cell = document.createElement('div');
+        cell.className = 'hcell day';
+        const dateStr = addDays(currentMonday, startIndex + i).toLocaleDateString('fr-FR', { weekday:'long', day:'2-digit', month:'long' });
+        cell.textContent = dateStr.replace(/^./, (c)=>c.toLowerCase());
+        if (isMobile) cell.style.gridColumn = '2 / 3';
+        daysHeaderEl.appendChild(cell);
+      }
+    }
+
+    function buildColumnsAndGrid() {
+      // Retire anciennes colonnes
+      Array.from(plannerEl.querySelectorAll('.daycol')).forEach(n => n.remove());
+      const count = isMobile ? 1 : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--day-count'));
+      const startIndex = isMobile ? mobileDayIndex : 0;
+      // Force layout width
+      plannerEl.style.gridTemplateColumns = isMobile ? '48px 1fr' : '80px repeat(var(--day-count), 1fr)';
+      for (let i=0;i<count;i++) {
+        const col = document.createElement('div');
+        col.className = 'daycol Cellule_TraitVertical';
+        col.dataset.day = startIndex + i;
+        plannerEl.appendChild(col);
+
+        // lignes repères (midi & 13h30)
+        const midi = document.createElement('div'); midi.className = 'repere'; midi.style.top = minToTop(12*60)+'px'; col.appendChild(midi);
+        const treizeTrente = document.createElement('div'); treizeTrente.className = 'repere'; treizeTrente.style.top = minToTop(13*60 + 30)+'px'; col.appendChild(treizeTrente);
+      }
+    }
+
+    // ───────────────────────── Layout chevauchements ─────────────────────────
+    function layoutDay(events) {
+      const items = events.map(e=>({ ...e, s: timeToMin(e.debut), e: timeToMin(e.fin) }))
+                          .sort((a,b)=> a.s-b.s || a.e-b.e);
+      const clusters = [];
+      for (const ev of items) {
+        const last = clusters[clusters.length-1];
+        if (!last || ev.s >= last.max) clusters.push({ evs:[ev], max: ev.e });
+        else { last.evs.push(ev); last.max = Math.max(last.max, ev.e); }
+      }
+      const placed=[];
+      for (const cl of clusters) {
+        const cols=[]; // fin max par colonne
+        for (const ev of cl.evs) {
+          let idx=0; while (idx<cols.length && ev.s < cols[idx]) idx++;
+          if (idx===cols.length) cols.push(ev.e); else cols[idx]=ev.e;
+          placed.push({ ...ev, colIndex: idx, colCount: cols.length });
+        }
+      }
+      return placed;
+    }
+
+    function renderEvent(ev, colEl) {
+      const hourH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hour-height'));
+      const startTop = minToTop(ev.s);
+      const height = (ev.e - ev.s) * (hourH/60);
+      const widthPct = 100 / ev.colCount;
+      const leftPct = widthPct * ev.colIndex;
+
+      const box = document.createElement('div');
+      box.className = `EmploiDuTemps_Element Cours ${ev.couleur || ''}`;
+      box.style.top = startTop + 'px';
+      box.style.height = height + 'px';
+      box.style.left = `calc(${leftPct}% + 3px)`;
+      box.style.width = `calc(${widthPct}% - 6px)`;
+
+      const linesalle = (ev.salle || '').split('\\n').map(s=>`<div>${s}</div>`).join('');
+      // Extract optional flag from matiere (text before ':')
+      const mat = ev.matiere || '';
+      const colonIdx = mat.indexOf(':');
+      const hasFlag = colonIdx > -1;
+      const flagText = hasFlag ? mat.slice(0, colonIdx).trim() : '';
+      const titleText = hasFlag ? mat.slice(colonIdx+1).trim() : mat;
+
+      if (height <= 28) {
+        box.classList.add('tiny');
+        const metaLine = [ev.prof || '', (ev.salle||'').replace(/\\n/g,' ')].filter(Boolean).join(' • ');
+        box.innerHTML = `
+          ${hasFlag ? `<div class="flag">${flagText}</div>` : ''}
+          <div class="title">${titleText}</div>
+          <div class="meta">${metaLine}</div>
+        `;
+      } else if (height <= 68) {
+        box.classList.add('compact');
+        box.innerHTML = `
+          ${hasFlag ? `<div class="flag">${flagText}</div>` : ''}
+          <div class="title">${titleText}</div>
+          <div class="meta">${ev.prof ? ev.prof : ''}</div>
+          <div class="meta">${(ev.salle || '').replace(/\\n/g,' ')}</div>
+        `;
+      } else {
+        box.innerHTML = `
+          ${hasFlag ? `<div class="flag">${flagText}</div>` : ''}
+          <div class="title">${titleText}</div>
+          <div class="meta">${ev.prof ? ev.prof : ''}</div>
+          <div class="meta">${linesalle}</div>
+        `;
+      }
+      box.addEventListener('click', (e) => { e.stopPropagation(); showSidecard(ev, box); });
+      colEl.appendChild(box);
+    }
+
+    // ───────────────────────── Popover sélection ─────────────────────────
+    let selectedBox = null;
+    let sidecardEl = null;
+    let onDocClick = null;
+    let onReposition = null;
+    function clearSelection() {
+      selectedBox?.classList.remove('selected');
+      selectedBox = null;
+      sidecardEl?.remove();
+      sidecardEl = null;
+      window.removeEventListener('keydown', onSideKey);
+      if (onDocClick) { document.removeEventListener('click', onDocClick, true); onDocClick = null; }
+      if (onReposition) {
+        window.removeEventListener('resize', onReposition);
+        window.removeEventListener('scroll', onReposition, true);
+        onReposition = null;
+      }
+    }
+    function onSideKey(e){ if (e.key === 'Escape') clearSelection(); }
+    function showSidecard(ev, anchorEl) {
+      // sélection visuelle
+      if (selectedBox && selectedBox !== anchorEl) selectedBox.classList.remove('selected');
+      selectedBox = anchorEl; selectedBox.classList.add('selected');
+
+      // carte latérale
+      sidecardEl?.remove();
+      sidecardEl = document.createElement('div');
+      sidecardEl.className = 'sidecard';
+      const occs = findOccurrencesIncludingCurrent(ev);
+      const countLabel = `${occs.length} séance${occs.length>1?'s':''}`;
+      const groups = collectGroupsAcross(occs);
+      const groupStr = groups.length ? groups.join(', ') : '—';
+      const mat = ev.matiere || '';
+      const ci = mat.indexOf(':');
+      const badge = ci > -1 ? mat.slice(0, ci).trim() : '';
+      const matTitle = ci > -1 ? mat.slice(ci+1).trim() : mat;
+      sidecardEl.innerHTML = `
+        <div class="top"><div>${countLabel}</div><button class="close" aria-label="Fermer">×</button></div>
+        <div class="hero">
+          ${badge ? `<div class="flag">${badge}</div>` : ''}
+          <div class="hrow"><strong>Ressource :</strong> ${matTitle}</div>
+          ${ev.prof ? `<div class="hrow"><strong>Enseignant(s) :</strong> ${ev.prof}</div>` : ''}
+          <div class="hrow"><strong>Public :</strong> ${groupStr}</div>
+        </div>
+        <div class="list"></div>
+      `;
+
+      const listEl = sidecardEl.querySelector('.list');
+      for (const oc of occs) {
+        const d = new Date(oc.monday);
+        const date = addDays(d, oc.jour);
+        const dateLabel = capitalizeFirst(date.toLocaleDateString('fr-FR',{ weekday:'short', day:'2-digit', month:'short' }));
+        const timeLabel = `de ${toHh(oc.debut)} à ${toHh(oc.fin)}`;
+        const room = getRoomFromSalle(oc.salle) || '';
+        const row = document.createElement('div');
+        row.className = 'orow';
+        row.innerHTML = `<div>${dateLabel}</div><div>${timeLabel}</div><div>${room}</div>`;
+        listEl.appendChild(row);
+      }
+
+      document.body.appendChild(sidecardEl);
+
+      // position: à côté du cours (desktop) ou en bottom sheet (mobile)
+      const placeCard = () => {
+        if (isMobile) {
+          sidecardEl.style.left = '0px';
+          sidecardEl.style.right = '0px';
+          sidecardEl.style.bottom = '0px';
+          sidecardEl.style.top = 'auto';
+        } else {
+          const anchorRect = anchorEl.getBoundingClientRect();
+          const cardRect = sidecardEl.getBoundingClientRect();
+          const preferRight = (window.innerWidth - anchorRect.right) > (cardRect.width + 12);
+          let left = preferRight ? (anchorRect.right + 8) : (anchorRect.left - cardRect.width - 8);
+          let top = anchorRect.top;
+          // clamp
+          left = Math.max(8, Math.min(left, window.innerWidth - cardRect.width - 8));
+          top = Math.max(8, Math.min(top, window.innerHeight - cardRect.height - 8));
+          sidecardEl.style.left = left + 'px';
+          sidecardEl.style.top = top + 'px';
+          sidecardEl.style.bottom = 'auto';
+        }
+      };
+      placeCard();
+      onReposition = placeCard;
+      window.addEventListener('resize', onReposition);
+      window.addEventListener('scroll', onReposition, true);
+
+      sidecardEl.querySelector('.close').addEventListener('click', clearSelection);
+      window.addEventListener('keydown', onSideKey);
+      // fermer en cliquant ailleurs
+      onDocClick = (e) => {
+        if (!sidecardEl) return;
+        if (sidecardEl.contains(e.target)) return; // clic dans la carte
+        if (selectedBox && selectedBox.contains(e.target)) return; // clic sur l'élément sélectionné
+        clearSelection();
+      };
+      document.addEventListener('click', onDocClick, true);
+      // animate sheet on mobile
+      if (isMobile) requestAnimationFrame(()=> sidecardEl.classList.add('show'));
+    }
+
+    function minutesToHH(total) { const h = Math.floor(total/60), m = total%60; return `${pad(h)}:${pad(m)}`; }
+    function toHh(hhmm) { return hhmm.replace(':','h'); }
+    function capitalizeFirst(s){ return s.replace(/^./, c => c.toUpperCase()); }
+
+    function findOccurrencesIncludingCurrent(ev) {
+      const out = [];
+      const sameSignature = (a) => a.matiere === ev.matiere && (a.prof || '') === (ev.prof || '') && a.debut === ev.debut && a.fin === ev.fin && a.jour === ev.jour;
+      for (const [mondayISO, arr] of Object.entries(WEEKS)) {
+        for (const e2 of arr) if (sameSignature(e2)) out.push({ monday: new Date(mondayISO + 'T00:00:00Z'), debut: e2.debut, fin: e2.fin, jour: e2.jour, salle: e2.salle || '' });
+      }
+      return out.sort((a,b)=> a.monday - b.monday);
+    }
+    function collectGroupsAcross(occs) {
+      const set = new Set();
+      for (const oc of occs) for (const g of getGroupsFromSalle(oc.salle)) set.add(g);
+      return Array.from(set);
+    }
+    function getGroupsFromSalle(salleStr) {
+      if (!salleStr) return [];
+      const parts = String(salleStr).split('\n').map(s=>s.trim()).filter(Boolean);
+      // Heuristique: tokens de type S\d-[A-Z]
+      const groups = [];
+      for (const p of parts) {
+        const m = p.match(/S\d-[A-Z](?:,\s*S\d-[A-Z])*/g);
+        if (m) {
+          for (const segment of m[0].split(/,\s*/)) groups.push(segment);
+        } else if (/^S\d-[A-Z]$/.test(p)) groups.push(p);
+      }
+      return groups;
+    }
+    function getRoomFromSalle(salleStr) {
+      if (!salleStr) return '';
+      const parts = String(salleStr).split('\n').map(s=>s.trim()).filter(Boolean);
+      // Prend la dernière ligne si elle ressemble à un code salle (ex: 0A53, 4A12)
+      const last = parts[parts.length-1] || '';
+      if (/^[0-9][A-Z][0-9]{2}$/.test(last)) return last;
+      // sinon retourne la première qui n'est pas un groupe
+      for (const p of parts) if (!/^S\d-[A-Z]$/.test(p)) return p;
+      return '';
+    }
+
+    function renderWeek() {
+      buildDaysHeader();
+      buildColumnsAndGrid();
+
+      const key = iso(currentMonday);
+      const data = WEEKS[key] || [];
+      const totalDays = 6; // grouping (Mon..Sat) — desktop grid
+      const byDay = Array.from({length: totalDays}, ()=>[]);
+      data.forEach(ev => { if (ev.jour >=0 && ev.jour < byDay.length) byDay[ev.jour].push(ev); });
+
+      const renderIndices = isMobile ? [mobileDayIndex] : [...Array(totalDays).keys()];
+      for (const d of renderIndices) {
+        const col = plannerEl.querySelector(`.daycol[data-day="${d}"]`);
+        if (!col) continue;
+        const placed = layoutDay(byDay[d]);
+        placed.forEach(ev => renderEvent(ev, col));
+      }
+      buildMobileBar();
+    }
+
+    function buildMobileBar() {
+      if (!isMobile) return;
+      const mon = currentMonday;
+      const sun = addDays(mon, 6);
+      mWeekLabelEl.textContent = `${pad(mon.getUTCDate())}/${pad(mon.getUTCMonth()+1)} → ${pad(sun.getUTCDate())}/${pad(sun.getUTCMonth()+1)}`;
+      mDaysTabsEl.innerHTML = '';
+      const labels = ['Lun','Mar','Mer','Jeu','Ven','Sam'];
+      for (let i=0;i<MOBILE_DAYS;i++) {
+        const tab = document.createElement('div');
+        tab.className = 'tab' + (i===mobileDayIndex ? ' active' : '');
+        const d = addDays(currentMonday, i);
+        tab.textContent = `${labels[i]} ${pad(d.getUTCDate())}/${pad(d.getUTCMonth()+1)}`;
+        tab.addEventListener('click', ()=>{ mobileDayIndex = i; renderWeek(); });
+        mDaysTabsEl.appendChild(tab);
+      }
+      // Scroll to active tab
+      const active = mDaysTabsEl.querySelector('.tab.active');
+      if (active) mDaysTabsEl.scrollTo({ left: Math.max(0, active.offsetLeft - 24), behavior: 'auto' });
+      mPrevEl.onclick = () => { currentMonday = addDays(currentMonday, -7); renderWeek(); };
+      mNextEl.onclick = () => { currentMonday = addDays(currentMonday,  7); renderWeek(); };
+      if (mImportEl) mImportEl.onclick = () => showUrlPrompt();
+      ensureSwipeListeners();
+
+      // Overlay semaines
+      mWeekLabelEl.onclick = () => openWeeksOverlay();
+      bindScrollLock();
+      setPlannerMaxHeight();
+    }
+
+    function openWeeksOverlay() {
+      if (!isMobile) return;
+      weeksGridEl.innerHTML = '';
+      const curW = weekNumber(currentMonday);
+      for (let w=1; w<=53; w++) {
+        const b = document.createElement('div');
+        b.className = 'wbtn' + (w===curW ? ' active' : '');
+        b.textContent = String(w);
+        b.addEventListener('click', () => {
+          const d = isoWeekToDate(currentMonday.getUTCFullYear(), w);
+          currentMonday = mondayOf(d);
+          weeksOverlayEl.classList.remove('show');
+          renderWeek();
+        });
+        weeksGridEl.appendChild(b);
+      }
+      weeksOverlayEl.classList.add('show');
+      weeksOverlayEl.addEventListener('click', (e)=>{ if (e.target === weeksOverlayEl) weeksOverlayEl.classList.remove('show'); });
+    }
+
+    // ───────────────────────── Barre semaines + mois (visuel fidèle) ─────────────────────────
+    function buildWeeksBar() {
+      if (isMobile) { weeksbarEl.innerHTML = ''; return; }
+      weeksbarEl.innerHTML = '';
+      const thisYear = currentMonday.getUTCFullYear();
+      const weeksInYear = 53; // pour couvrir 52/53
+      const curWeek = weekNumber(currentMonday);
+      for (let w = 1; w <= weeksInYear; w++) {
+        const div = document.createElement('div');
+        div.className = 'weekbox';
+        div.textContent = w;
+        if (w === curWeek) div.classList.add('active');
+        div.addEventListener('click', () => {
+          // Trouver le lundi de la semaine ISO w
+          const d = isoWeekToDate(thisYear, w);
+          currentMonday = mondayOf(d);
+          buildWeeksBar();
+          renderWeek();
+        });
+        weeksbarEl.appendChild(div);
+      }
+    }
+    function buildMonthsBar() {
+      if (isMobile) { monthsbarEl.innerHTML = ''; return; }
+      monthsbarEl.innerHTML = '';
+      const labels = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+      for (let i=0; i<labels.length; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'mcell';
+        cell.textContent = labels[i];
+        monthsbarEl.appendChild(cell);
+      }
+      // Contrôles: chargeur ICS
+      const controls = document.createElement('div');
+      controls.style.gridColumn = '1 / -1';
+      controls.style.display = 'flex';
+      controls.style.justifyContent = 'flex-end';
+      controls.style.gap = '8px';
+      controls.style.padding = '4px 6px';
+      const btn = document.createElement('button');
+      btn.textContent = 'Charger .ics';
+      btn.className = 'btn';
+      btn.addEventListener('click', () => ensureFileInput().click());
+      controls.appendChild(btn);
+      monthsbarEl.appendChild(controls);
+    }
+
+    function ensureFileInput() {
+      if (fileInputEl) return fileInputEl;
+      fileInputEl = document.createElement('input');
+      fileInputEl.type = 'file';
+      fileInputEl.accept = '.ics,text/calendar';
+      fileInputEl.style.display = 'none';
+      document.body.appendChild(fileInputEl);
+      fileInputEl.addEventListener('change', async () => {
+        const f = fileInputEl.files && fileInputEl.files[0];
+        if (!f) return;
+        const text = await f.text();
+        loadICSText(text, { jumpToToday: true, save: true });
+      });
+      return fileInputEl;
+    }
+
+    function isoWeekToDate(year, week) {
+      const simple = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7));
+      const dow = simple.getUTCDay();
+      const ISOweekStart = simple;
+      const diff = (dow <= 4 ? 1 : 8) - dow; // 1=lun, corrige vers lundi
+      ISOweekStart.setUTCDate(simple.getUTCDate() + diff);
+      return ISOweekStart;
+    }
+
+    function showUrlPrompt() {
+      icsUrlErrorEl.style.display = 'none';
+      urlOverlayEl.classList.add('show');
+      icsUrlInputEl.value = '';
+      icsUrlInputEl.placeholder = 'https://exemple.edu/ics/MonPlanning.ics?token=...';
+      setTimeout(()=> icsUrlInputEl.focus(), 0);
+    }
+    function hideUrlPrompt() { urlOverlayEl.classList.remove('show'); }
+    async function handleUrlLoad() {
+      const url = (icsUrlInputEl.value || '').trim();
+      if (!url) { icsUrlErrorEl.textContent = 'Veuillez entrer une URL'; icsUrlErrorEl.style.display='block'; return; }
+      try {
+        icsUrlErrorEl.style.display = 'none';
+        const resp = await fetch('fetch_ics.php?url=' + encodeURIComponent(url), { cache: 'no-store' });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const text = await resp.text();
+        try { localStorage.setItem('OpenPlanning.icsURL', url); } catch {}
+        hideUrlPrompt();
+        loadICSText(text, { jumpToToday: true, save: false });
+      } catch (e) {
+        icsUrlErrorEl.textContent = 'Impossible de charger ce lien. Vérifiez l\'URL.';
+        icsUrlErrorEl.style.display = 'block';
+      }
+    }
+    icsUrlLoadEl.addEventListener('click', handleUrlLoad);
+    icsUrlCancelEl.addEventListener('click', hideUrlPrompt);
+    icsUrlInputEl.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') handleUrlLoad(); });
+
+    // ───────────────────────── Boot ─────────────────────────
+    buildHours();
+    buildMonthsBar();
+    buildWeeksBar();
+    renderWeek();
+    // tente de charger l'ICS par défaut si servi depuis un serveur
+    loadDefaultICS();
+    bindScrollLock();
+    window.addEventListener('resize', setPlannerMaxHeight);
+
+    // API publique minimale — mêmes signatures que précédemment
+    window.OpenPlanning = {
+      loadWeeks(weeks){ Object.assign(WEEKS, weeks || {}); renderWeek(); },
+      setWeekByMonday(isoMonday){ const [y,m,d] = isoMonday.split('-').map(Number); currentMonday = new Date(Date.UTC(y,m-1,d)); buildWeeksBar(); renderWeek(); },
+      getCurrentMondayISO(){ return iso(currentMonday); }
+    };
+  </script>
+</body>
+</html>
